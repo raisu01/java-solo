@@ -1,0 +1,9 @@
+src\main\java\client\Client.class
+src\main\java\common\Protocol.class
+src\main\java\common\Message$Type.class
+src\main\java\server\Server$ServerListener.class
+gui\JavaFxClient.class
+gui\JavaFxServer.class
+src\main\java\common\Message.class
+src\main\java\server\ClientHandler.class
+src\main\java\server\Server.class

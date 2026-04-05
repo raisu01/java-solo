@@ -1,4 +1,4 @@
-package common;
+package src.main.java.common;
 
 public final class Protocol {
     public static final int DEFAULT_PORT = 9999;

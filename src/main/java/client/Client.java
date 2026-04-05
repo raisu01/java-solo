@@ -1,9 +1,10 @@
-package client;
+package src.main.java.client;
 
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
-import common.*;
+
+import src.main.java.common.*;
 
 public class Client {
     public static void main(String[] args) {
