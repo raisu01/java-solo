@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
+import common.Protocol;
+
 public class ClientHandler implements Runnable {
     private Socket socket;
     public ClientHandler(Socket socket){
@@ -59,7 +61,7 @@ public class ClientHandler implements Runnable {
         
         Process process = pb.start();
 
-        BufferedReader processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        BufferedReader processReader = new BufferedReader(new InputStreamReader(process.getInputStream(),Protocol.ENCODING));
         
         String line;
         while ((line = processReader.readLine()) != null) {

@@ -2,7 +2,7 @@ package common;
 
 public final class Protocol {
     public static final int DEFAULT_PORT = 9999;
-    public static final String ENCODING = "UTF-8";
+    public static final String ENCODING = "CP850";
 
     public static final String EXIT_COMMAND   = "exit";
     public static final String PING_COMMAND   = "ping";
