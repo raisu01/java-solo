@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -29,7 +30,7 @@ public class ClientHandler implements Runnable {
             while ((message= reader.readLine()) != null) {
                 if ("EXIT".equalsIgnoreCase(message)) break;
 
-                executeCommand(message , writer);
+                executeCommand(message , writer, reader);
             }
             
         }catch (SocketTimeoutException e) {
@@ -43,36 +44,50 @@ public class ClientHandler implements Runnable {
         }    
     }
 
-    private void executeCommand(String command , PrintWriter writer){
-    try {
-            ProcessBuilder pb;
-        String os = System.getProperty("os.name").toLowerCase();
-        System.out.println("OS détecté : " + os);
+    private void executeCommand(String command, PrintWriter clientWriter, BufferedReader clientReader) {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            ProcessBuilder pb = os.contains("win") 
+                ? new ProcessBuilder("cmd.exe", "/c", command)
+                : new ProcessBuilder("/bin/sh", "-c", command);
 
-      if (os.contains("win")) {
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
 
-            pb = new ProcessBuilder("cmd.exe", "/c", command);
-        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
-            pb = new ProcessBuilder("/bin/sh", "-c", command);
-        } else {
-            pb = new ProcessBuilder(command.split(" "));
+            OutputStreamWriter processIn = new OutputStreamWriter(process.getOutputStream(), Protocol.ENCODING);
+
+            // --- THREAD DE LECTURE (SORTIE DU PROCESSUS -> CLIENT) ---
+            Thread outputThread = new Thread(() -> {
+                try (InputStreamReader processOut = new InputStreamReader(process.getInputStream(), Protocol.ENCODING)) {
+                    int c;
+                    // On lit caractère par caractère pour ne pas rater les "prompts" sans \n
+                    while ((c = processOut.read()) != -1) {
+                        clientWriter.print((char) c);
+                        clientWriter.flush(); // Crucial pour l'interactivité !
+                    }
+                } catch (IOException e) {
+                }
+            });
+            outputThread.start();
+
+            // --- BOUCLE PRINCIPALE (CLIENT -> ENTRÉE DU PROCESSUS) ---
+            while (process.isAlive()) {
+                if (clientReader.ready()) { // On vérifie si le client a tapé quelque chose
+                    String input = clientReader.readLine();
+                    if (input != null) {
+                        processIn.write(input + "\n");
+                        processIn.flush();
+                    }
+                }
+                Thread.sleep(50); 
+            }
+
+            process.waitFor();
+            outputThread.join(1000); 
+            clientWriter.println("\n--- FIN DE COMMANDE ---");
+
+        } catch (Exception e) {
+            clientWriter.println("Erreur : " + e.getMessage());
         }
-        pb.redirectErrorStream(true);
-        
-        Process process = pb.start();
-
-        BufferedReader processReader = new BufferedReader(new InputStreamReader(process.getInputStream(),Protocol.ENCODING));
-        
-        String line;
-        while ((line = processReader.readLine()) != null) {
-            writer.println(line); // On envoie chaque ligne au client via le socket
-        }
-        process.waitFor();
-        writer.println("--- FIN DE COMMANDE ---");
-    } catch (Exception e) {
-       writer.println("Erreur lors de l'exécution : " + e.getMessage());
-    }
-    }
-
-
+}
 }
