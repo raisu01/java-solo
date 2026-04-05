@@ -26,9 +26,15 @@ public class Client {
                     
                     if ("EXIT".equalsIgnoreCase(userMessage)) break;
 
-                    String response = reader.readLine(); // Attente de la réponse
-                    System.out.println("Serveur a répondu : " + response);
-                    System.out.println("Serveur a répondu : " + response);
+                    String lineFromServer;
+                            while ((lineFromServer = reader.readLine()) != null) {
+                                
+                                if ("--- FIN DE COMMANDE ---".equals(lineFromServer)) {
+                                    break;
+                                }
+                                
+                                System.out.println(lineFromServer);
+                            }
 
                 }
                 scanner.close();

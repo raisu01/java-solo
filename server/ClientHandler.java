@@ -26,7 +26,6 @@ public class ClientHandler implements Runnable {
 
             while ((message= reader.readLine()) != null) {
                 if ("EXIT".equalsIgnoreCase(message)) break;
-                writer.println("Exécution de : " + message);
 
                 executeCommand(message , writer);
             }
@@ -44,8 +43,18 @@ public class ClientHandler implements Runnable {
 
     private void executeCommand(String command , PrintWriter writer){
     try {
-            ProcessBuilder pb = new ProcessBuilder(command.split(" ")); // preparer la commande 
+            ProcessBuilder pb;
+        String os = System.getProperty("os.name").toLowerCase();
+        System.out.println("OS détecté : " + os);
 
+      if (os.contains("win")) {
+
+            pb = new ProcessBuilder("cmd.exe", "/c", command);
+        } else if (os.contains("nix") || os.contains("nux") || os.contains("mac")) {
+            pb = new ProcessBuilder("/bin/sh", "-c", command);
+        } else {
+            pb = new ProcessBuilder(command.split(" "));
+        }
         pb.redirectErrorStream(true);
         
         Process process = pb.start();
@@ -57,6 +66,7 @@ public class ClientHandler implements Runnable {
             writer.println(line); // On envoie chaque ligne au client via le socket
         }
         process.waitFor();
+        writer.println("--- FIN DE COMMANDE ---");
     } catch (Exception e) {
        writer.println("Erreur lors de l'exécution : " + e.getMessage());
     }
