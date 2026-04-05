@@ -9,7 +9,7 @@ public final class Protocol {
     public static final String AUTH_COMMAND   = "auth";
 
     public static final int CONNECTION_TIMEOUT_MS = 30_000;
-    public static final int MAX_CLIENTS = 1;
+    public static final int MAX_CLIENTS = 3;
     public static final int MAX_OUTPUT_SIZE = 512 * 1024; // 512 KB
 
     private Protocol() {}
