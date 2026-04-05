@@ -28,6 +28,8 @@ public class Client {
 
                     String response = reader.readLine(); // Attente de la réponse
                     System.out.println("Serveur a répondu : " + response);
+                    System.out.println("Serveur a répondu : " + response);
+
                 }
                 scanner.close();
 

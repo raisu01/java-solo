@@ -25,21 +25,41 @@ public class ClientHandler implements Runnable {
                 System.out.println("client [" + Thread.currentThread().getId() + "] connecter " );
 
             while ((message= reader.readLine()) != null) {
-                System.out.println("Reçu du client [" + Thread.currentThread().getId() + "] : " + message);
-                writer.println("Serveur dit : " + message);
-                
                 if ("EXIT".equalsIgnoreCase(message)) break;
+                writer.println("Exécution de : " + message);
+
+                executeCommand(message , writer);
             }
             
         }catch (SocketTimeoutException e) {
         System.err.println("Client trop lent, déconnexion forcée."); }
-        
+
         catch (IOException e) {
             System.out.println("Erreur avec le client : " + e.getMessage());
         } finally {
             try { socket.close(); } catch (IOException e) { e.printStackTrace(); }
             System.out.println("Connexion client [" + Thread.currentThread().getId() + "] fermée.");
         }    
+    }
+
+    private void executeCommand(String command , PrintWriter writer){
+    try {
+            ProcessBuilder pb = new ProcessBuilder(command.split(" ")); // preparer la commande 
+
+        pb.redirectErrorStream(true);
+        
+        Process process = pb.start();
+
+        BufferedReader processReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        
+        String line;
+        while ((line = processReader.readLine()) != null) {
+            writer.println(line); // On envoie chaque ligne au client via le socket
+        }
+        process.waitFor();
+    } catch (Exception e) {
+       writer.println("Erreur lors de l'exécution : " + e.getMessage());
+    }
     }
 
 
