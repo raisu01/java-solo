@@ -10,7 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import src.main.java.server.Server;
+import server.Server;
 
 import java.io.IOException;
 import java.time.LocalTime;

@@ -11,7 +11,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import src.main.java.common.Protocol;
+import common.Protocol;
 
 import java.io.*;
 import java.net.Socket;

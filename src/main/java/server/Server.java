@@ -1,16 +1,14 @@
-package src.main.java.server;
+package server;
 
 import java.io.*;
 import java.net.*;
 import java.util.List;
 import java.util.concurrent.*;
-import src.main.java.common.Protocol;
+import common.Protocol;
 
 public class Server {
 
-    // -------------------------------------------------------------------------
-    //  Interface de callbacks vers l'UI
-    // -------------------------------------------------------------------------
+
     public interface ServerListener {
         void onClientConnected(String clientId, String ip);
         void onClientDisconnected(String clientId);
@@ -18,9 +16,8 @@ public class Server {
         void onLog(String message);
     }
 
-    // -------------------------------------------------------------------------
     //  État interne
-    // -------------------------------------------------------------------------
+    
     private ServerSocket serverSocket;
     private ExecutorService pool;
     private volatile boolean running = false;
@@ -31,9 +28,9 @@ public class Server {
         this.listener = listener;
     }
 
-    // -------------------------------------------------------------------------
+    
     //  Démarrage
-    // -------------------------------------------------------------------------
+    
     public void start() throws IOException {
         serverSocket = new ServerSocket(Protocol.DEFAULT_PORT);
         pool = Executors.newFixedThreadPool(Protocol.MAX_CLIENTS);
@@ -61,9 +58,9 @@ public class Server {
         acceptThread.start();
     }
 
-    // -------------------------------------------------------------------------
+    
     //  Arrêt
-    // -------------------------------------------------------------------------
+    
     public void stop() {
         running = false;
         try {
@@ -74,17 +71,17 @@ public class Server {
         log("Serveur arrêté.");
     }
 
-    // -------------------------------------------------------------------------
+    
     //  Utilitaire
-    // -------------------------------------------------------------------------
+    
     private void log(String message) {
         if (listener != null) listener.onLog(message);
         else System.out.println("[Server] " + message);
     }
 
-    // -------------------------------------------------------------------------
+    
     //  Point d'entrée → lance l'UI serveur
-    // -------------------------------------------------------------------------
+    
     public static void main(String[] args) {
         javafx.application.Application.launch(gui.JavaFxServer.class, args);
     }

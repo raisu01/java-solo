@@ -1,8 +1,8 @@
-package src.main.java.server;
+package server;
 
 import java.io.*;
 import java.net.*;
-import src.main.java.common.Protocol;
+import common.Protocol;
 
 public class ClientHandler implements Runnable {
 
